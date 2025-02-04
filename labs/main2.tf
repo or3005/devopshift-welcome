@@ -2,13 +2,13 @@ terraform {
   required_providers {
     time = {
       source  = "hashicorp/time"
-      version = "0.7.2"  # Make sure to use the version that match latest version
+      version = "0.12.1"
     }
   }
 }
 
 resource "time_sleep" "wait_for_ip" {
-  create_duration = "30s"  # Introduce a delay of 30 seconds
+  create_duration = "10s"  # Introduce a delay of 30 seconds
 }
 
 
