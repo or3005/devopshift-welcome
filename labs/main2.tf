@@ -12,11 +12,12 @@ resource "time_sleep" "wait_for_ip" {
 }
 
 
-output "vm_public_ip" {
-  value       = aws_instance.vm.public_ip
-  depends_on  = [time_sleep.wait_for_ip]  # Wait for the time_sleep resource to complete
-  description = "Public IP address of the VM"
-}
+# output "vm_public_ip" {
+#   value       = aws_instance.vm.public_ip
+#   depends_on  = [time_sleep.wait_for_ip]  # Wait for the time_sleep resource to complete
+#   description = "Public IP address of the VM"
+  
+# }
 
 
 
@@ -28,6 +29,14 @@ provider "aws" {
 variable "region" {
   default = "us-east-1"
 }
+
+
+
+
+
+
+
+
 
 resource "aws_security_group" "sg" {
   ingress {
@@ -57,3 +66,12 @@ resource "aws_instance" "vm" {
 }
 
 
+resource "null_resource" "run_script" {
+   triggers = {
+    build_number = "1.0.0"
+  }
+
+  provisioner "local-exec" {
+    command = "echo 'Hello Jb Class'"
+  }
+}
