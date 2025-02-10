@@ -1,0 +1,6 @@
+2025-02-10 16:07:30,087 - orloger - INFO- This is info
+2025-02-10 16:07:30,095 - orloger - DEBUG- this is debug
+2025-02-10 16:07:30,098 - orloger - ERROR- this is error
+2025-02-10 16:07:30,101 - orloger - WARNING- this is warning
+2025-02-10 16:08:52,720 - INFO - servermysql is runnig
+2025-02-10 16:09:02,224 - INFO - serverdocker is runnig

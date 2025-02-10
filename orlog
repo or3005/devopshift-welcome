@@ -1,0 +1,10 @@
+2025-02-10 15:28:34,897 - INFO - serverapache is runnig
+2025-02-10 16:00:42,824 - INFO - serverdocker is runnig
+2025-02-10 16:04:10,169 - orloger - INFO- This is info
+2025-02-10 16:04:10,176 - orloger - DEBUG- this is debug
+2025-02-10 16:04:10,178 - orloger - ERROR- this is error
+2025-02-10 16:04:10,180 - orloger - WARNING- this is warning
+2025-02-10 16:05:41,834 - orloger - INFO- This is info
+2025-02-10 16:05:41,840 - orloger - DEBUG- this is debug
+2025-02-10 16:05:41,842 - orloger - ERROR- this is error
+2025-02-10 16:05:41,844 - orloger - WARNING- this is warning
