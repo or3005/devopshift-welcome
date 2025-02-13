@@ -3,11 +3,11 @@ import httpx
 import json
 import requests
 import time
-
+import os
 
 # app=FastAPI()
 
-
+API_KEY=os.environ["API_KEY"]
 # @app.get("/users")
 def get_users():
     try:
