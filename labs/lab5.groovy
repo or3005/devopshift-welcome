@@ -10,12 +10,12 @@ node {
 
 
     stage('Clone'){
-        runStage('Clone',  echo 'cloning repostry...')
+        runStage('Clone',  'echo "cloning repostry..."')
        
     }
 
     stage('Build'){
-        runStage('Buiild', echo 'building python project...')
+        runStage('Buiild', 'echo "building python project..."')
        
     }
 
@@ -23,12 +23,12 @@ node {
     parallel{
         
         stage('Lint'){
-            runStage('Lint', echo "Running Pyhthon linting")
+            runStage('Lint', 'echo "Running Pyhthon linting"')
             
         }
 
         stage('Security test'){
-            runStage('Security test', echo "Running security checks (e.g, safety)")
+            runStage('Security test', 'echo "Running security checks (e.g, safety)"')
         }
 
     }
@@ -43,7 +43,7 @@ node {
                                      parameters: [choice(name: 'Approve', choices: 'Proceed\nAbort', description: 'Select Proceed to deploy, Abort to cancel.')]
 
                 if (userInput == 'Proceed') {
-                    runStage('Deploy', echo "Deploying Python project to production...")
+                    runStage('Deploy', 'echo "Deploying Python project to production..."')
                     
 
                 } else {
