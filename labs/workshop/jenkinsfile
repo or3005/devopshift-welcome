@@ -3,16 +3,15 @@ pipeline {
 
     environment {
         PYTHON_VERSIONS = ['3.8', '3.9'] // Define Python versions for the matrix
-        DOCKERHUB_CREDENTIALS = 'dockerhub-credentials' // DockerHub credentials ID
-        REPO_NAME = 'your-dockerhub-username/python-fake-data-app' // DockerHub repository name
-        GITHUB_REPO = '???' // Update with your GitHub repository URL
-        GITHUB_BRANCH = '' // Update with your GitHub repository branch
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials') // Securely access stored DockerHub credentials
+        REPO_NAME = 'orbiton3005/python-fake-data-app' // DockerHub repository name
+        GITHUB_REPO = 'https://github.com/or3005/devopshift-welcome.git' // Update with your GitHub repository URL
+        GITHUB_BRANCH = 'oragin' // Check and update with the correct branch name
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                // Clone the repository containing the Python script and Dockerfile
                 git branch: "${GITHUB_BRANCH}", url: "${GITHUB_REPO}"
             }
         }
@@ -65,7 +64,7 @@ pipeline {
                     stage('Build Image') {
                         steps {
                             script {
-                                docker.build("${REPO_NAME}:${PYTHON_VERSION}", "--build-arg PYTHON_VERSION=${PYTHON_VERSION} .")
+                                sh "docker build --build-arg PYTHON_VERSION=${PYTHON_VERSION} -t ${REPO_NAME}:${PYTHON_VERSION} ."
                             }
                         }
                     }
@@ -85,8 +84,8 @@ pipeline {
                     stage('Push Image') {
                         steps {
                             script {
-                                docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-                                    docker.image("${REPO_NAME}:${PYTHON_VERSION}").push()
+                                withDockerRegistry([credentialsId: 'dockerhub-credentials', url: 'https://index.docker.io/v1/']) {
+                                    sh "docker push ${REPO_NAME}:${PYTHON_VERSION}"
                                 }
                             }
                         }
@@ -98,7 +97,8 @@ pipeline {
 
     post {
         always {
-            echo "Pipeline completed."
+            sh "docker logout" // Ensures security by logging out of DockerHub
+            echo "✅ Pipeline execution completed."
         }
     }
 }
