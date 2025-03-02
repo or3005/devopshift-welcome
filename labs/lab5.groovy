@@ -1,12 +1,13 @@
-def runStage = { stageName, command ->
+
+
+node {
+    try {
+        def runStage = { stageName, command ->
     stage(stageName) {
         echo "Starting stage: ${stageName}"
         sh command
     }
-}
-
-node {
-    try {
+    }
         // Stage for cloning the repository
         stage('Clone') {
             runStage('Clone', 'echo "cloning repository..."')
