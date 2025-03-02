@@ -11,6 +11,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
+                // Clone the repository containing the Python script and Dockerfile
                 git branch: "${GITHUB_BRANCH}", url: "${GITHUB_REPO}"
             }
         }
@@ -18,12 +19,12 @@ pipeline {
         stage('Install Dependencies') {
             agent {
                 docker {
-                    image 'python:3.8' // Use any Python version for dependency installation
-                    args '-v $HOME/.cache/pip:/root/.cache/pip'
+                    image 'python:3.8' // Use a Python image for dependency installation
+                    args '-v $HOME/.cache/pip:/root/.cache/pip' // Caching pip dependencies to speed up builds
                 }
             }
             steps {
-                sh 'pip install faker'
+                sh 'pip install faker' // Install the required Python package
             }
         }
 
@@ -32,19 +33,24 @@ pipeline {
                 axes {
                     axis {
                         name 'PYTHON_VERSION'
-                        values ['3.8', '3.9'] // Directly define the versions as a list of strings
+                        values '3.8', '3.9'
                     }
                 }
                 stages {
                     stage('Run Test') {
                         agent {
                             docker {
-                                image "python:${PYTHON_VERSION}"
-                                reuseNode true
+                                image "python:${PYTHON_VERSION}" // Use the Python version from the matrix
+                                reuseNode true // Reuse the same agent to prevent unnecessary overhead
                             }
                         }
                         steps {
-                            sh 'python app.py'
+                            sh """
+                               pip install faker
+                               wget https://raw.githubusercontent.com/nashpaz123/devopshift-welcome/refs/heads/jenkins-workshop/welcome/app/faker/app.py
+                               wget https://raw.githubusercontent.com/nashpaz123/devopshift-welcome/refs/heads/jenkins-workshop/welcome/app/faker/Dockerfile
+                               python app.py
+                            """
                         }
                     }
                 }
@@ -56,14 +62,15 @@ pipeline {
                 axes {
                     axis {
                         name 'PYTHON_VERSION'
-                        values ['3.8', '3.9'] // Directly define the versions as a list of strings
+                        values '3.8', '3.9'
                     }
                 }
                 stages {
                     stage('Build Image') {
                         steps {
                             script {
-                                sh "docker build --build-arg PYTHON_VERSION=${PYTHON_VERSION} -t ${REPO_NAME}:${PYTHON_VERSION} ."
+                                // Build the Docker image dynamically based on the Python version
+                                docker.build("${REPO_NAME}:${PYTHON_VERSION}", "--build-arg PYTHON_VERSION=${PYTHON_VERSION} .")
                             }
                         }
                     }
@@ -76,15 +83,16 @@ pipeline {
                 axes {
                     axis {
                         name 'PYTHON_VERSION'
-                        values ['3.8', '3.9'] // Directly define the versions as a list of strings
+                        values '3.8', '3.9'
                     }
                 }
                 stages {
                     stage('Push Image') {
                         steps {
                             script {
-                                withDockerRegistry([credentialsId: 'dockerhub-credentials', url: 'https://index.docker.io/v1/']) {
-                                    sh "docker push ${REPO_NAME}:${PYTHON_VERSION}"
+                                // Push the built image to DockerHub using DockerHub credentials
+                                docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                                    docker.image("${REPO_NAME}:${PYTHON_VERSION}").push() // Push each image
                                 }
                             }
                         }
@@ -96,8 +104,7 @@ pipeline {
 
     post {
         always {
-            sh "docker logout" // Ensures security by logging out of DockerHub
-            echo "✅ Pipeline execution completed."
+            echo "Pipeline completed."
         }
     }
 }
