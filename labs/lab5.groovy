@@ -58,6 +58,17 @@ node {
     stage('Cleanup') {
     runStage('Cleanup', 'echo "Cleaning up workspace..."')
     }
+
+   try{
+        echo "all stage completed"
+    }
+    catch
+    {
+        echo "error in one of the stages"
+    }
+
+  
+  
 }
 
 
