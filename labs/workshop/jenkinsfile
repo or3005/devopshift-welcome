@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_VERSIONS = '3.8', '3.9' // Define Python versions for the matrix
+        PYTHON_VERSIONS = '3.8' '3.9' // Define Python versions for the matrix
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials') // Securely access stored DockerHub credentials
         REPO_NAME = 'orbiton3005/python-fake-data-app' // DockerHub repository name
         GITHUB_REPO = 'https://github.com/or3005/devopshift-welcome.git' // Update with your GitHub repository URL
