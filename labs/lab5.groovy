@@ -1,12 +1,13 @@
-def runStage = { stageName, command ->
+
+node {
+    try {
+        def runStage = { stageName, command ->
     stage(stageName) {
         echo "Starting stage: ${stageName}"
         sh command
     }
-}
-
-node {
-    try {
+    }
+>>>>>>> 49dae5a6ea8ccffd3befe66f27e8a99397573d3b
         // Stage for cloning the repository
         stage('Clone') {
             runStage('Clone', 'echo "cloning repository..."')
@@ -51,4 +52,8 @@ node {
     } catch (Exception e) {
         echo "Error in one of the stages: ${e.message}"
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 49dae5a6ea8ccffd3befe66f27e8a99397573d3b
