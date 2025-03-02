@@ -1,12 +1,14 @@
-node {
-
-
-  def runStage = { stageName, command ->
+def runStage = { stageName, command ->
         stage(stageName) {
             echo "Starting stage: ${stageName}"
             sh command
         }
     }
+
+node {
+
+
+
 
 
     stage('Clone'){
