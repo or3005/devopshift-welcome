@@ -1,15 +1,13 @@
+
+
+node {
+
 def runStage = { stageName, command ->
         stage(stageName) {
             echo "Starting stage: ${stageName}"
             sh command
         }
     }
-
-node {
-
-
-
-
 
     stage('Clone'){
         runStage('Clone',  'echo "cloning repostry..."')
@@ -57,9 +55,9 @@ node {
 
 
 
-    stage('Cleanup') {
-    runStage('Cleanup', 'echo "Cleaning up workspace..."')
-    }
+    // stage('Cleanup') {
+    // runStage('Cleanup', 'echo "Cleaning up workspace..."')
+    // }
 
 
        try {
