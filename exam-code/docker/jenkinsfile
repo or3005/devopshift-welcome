@@ -1,5 +1,5 @@
 pipeline {
-     agent {label 'docker'}
+    agent { label 'docker' }
 
     parameters {
         choice(name: 'PIPELINE_TYPE', choices: ['fe', 'be'], description: 'Select pipeline type')
@@ -14,49 +14,50 @@ pipeline {
 
     stages {
         stage('Clone Repository') {
-       
             steps {
                 git branch: 'workshop/argo-jenkins-exam', url: 'https://github.com/or3005/devopshift-welcome.git'
             }
         }
 
-         stage('Lint & Security Scan') {
+        stage('Lint & Security Scan') {
             parallel {
                 stage('Flake8 Linting') {
                     steps {
-                       script {
-                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                             dir("exam-code/docker/${params.PIPELINE_TYPE}/src") {
-                                 echo 'Flake8 Linting start'
-                                 sh 'pip install flake8'
-                                 sh 'flake8 .'
-                                  }
-                         }}
+                        script {
+                            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                dir("exam-code/docker/${params.PIPELINE_TYPE}/src") {
+                                    echo 'Flake8 Linting start'
+                                    sh 'pip install flake8'
+                                    sh 'flake8 .'
+                                }
+                            }
+                        }
                     }
                 }
 
                 stage('Bandit') {
                     steps {
                         script {
-                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                          dir("exam-code/docker/${params.PIPELINE_TYPE}/src") {
-                            echo 'Bandit start'
-                           
-                            sh 'pip install bandit'
-                            sh "bandit -r ."
-                              }               
-                        }}
+                            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                dir("exam-code/docker/${params.PIPELINE_TYPE}/src") {
+                                    echo 'Bandit start'
+                                    sh 'pip install bandit'
+                                    sh 'bandit -r .'
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
+
         stage('Install Dependencies') {
-           
             steps {
-               dir("exam-code/docker/${params.PIPELINE_TYPE}/src")
-                echo 'Installing dependencies'
-                sh "pip install -r ${params.PIPELINE_TYPE}/requirements.txt"
-            }}
+                dir("exam-code/docker/${params.PIPELINE_TYPE}/src") {
+                    echo 'Installing dependencies'
+                    sh "pip install -r ${params.PIPELINE_TYPE}/requirements.txt"
+                }
+            }
         }
 
         stage('Build Docker Image') {
@@ -99,7 +100,7 @@ pipeline {
                     echo "Running Integration Test with Docker Compose"
                     sh 'docker-compose up -d'
                     sleep 10
-                    sh 'docker ps | grep -q 5002 && echo "Port 5002 is mapped and the container is running." || exit 1 ' // Adjust port for backend if needed
+                    sh 'docker ps | grep -q 5002 && echo "Port 5002 is mapped and the container is running." || exit 1'
                     sh 'docker-compose down'
                 }
             }
@@ -122,5 +123,5 @@ pipeline {
                 }
             }
         }
-    
+    }
 }
