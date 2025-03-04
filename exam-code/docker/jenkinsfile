@@ -30,7 +30,7 @@ pipeline {
                     steps {
                         script {
                             echo 'Flake8 Linting start'
-                            sh 'apt-get update && apt-get install -y python3-pip'
+                            sh 'sudo apt-get update && apt-get install -y python3-pip'
                             sh 'pip install flake8'
                             sh "flake8 ${params.PIPELINE_TYPE}/src"
                         }
@@ -41,7 +41,7 @@ pipeline {
                     steps {
                         script {
                             echo 'Bandit start'
-                            sh 'apt-get update && apt-get install -y python3-pip'
+                            sh 'sudo apt-get update && apt-get install -y python3-pip'
                             sh 'pip install bandit'
                             sh "bandit -r ${params.PIPELINE_TYPE}/src"
                         }
