@@ -79,7 +79,7 @@ pipeline {
                 dir("exam-code/docker/${params.PIPELINE_TYPE}/src") {
                  script {
                     echo "Running Tests in Container"
-                    sh "docker run --rm ${DOCKER_REGISTRY}/${REPO_NAME}:${BUILD_NUMBER} pytest /tests/"
+                    sh "docker run --rm ${DOCKER_REGISTRY}/${REPO_NAME}:${BUILD_NUMBER} pytest /tests"
                 }
             }}
         }
