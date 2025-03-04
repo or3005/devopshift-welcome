@@ -1,10 +1,5 @@
 pipeline {
-     agent {
-       docker {
-           image 'python:3.10'
-       }
-   }
-  
+     agent {label 'docker'}
 
     parameters {
         choice(name: 'PIPELINE_TYPE', choices: ['fe', 'be'], description: 'Select pipeline type')
