@@ -90,7 +90,7 @@ pipeline {
                 dir("exam-code/docker/") {
                     script {
                      echo "Running Integration Test with Docker Compose"
-                     sh 'docker-compose up -d'
+                     sh 'docker-compose -f docker-compose.yml up -d'
                      sleep 10
                      sh 'docker ps | grep -q 5002 && echo "Port 5002 is mapped and the container is running." || exit 1'
                      sh 'docker-compose down'
