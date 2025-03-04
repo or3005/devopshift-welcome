@@ -1,5 +1,10 @@
 pipeline {
-    agent any  
+     agent {
+       docker {
+           image 'python:3.10'
+       }
+   }
+  
 
     parameters {
         choice(name: 'PIPELINE_TYPE', choices: ['fe', 'be'], description: 'Select pipeline type')
@@ -14,12 +19,7 @@ pipeline {
 
     stages {
         stage('Clone Repository') {
-            agent {
-                docker {
-                    image 'python:3.10'
-                    
-                }
-            }
+       
             steps {
                 git branch: 'workshop/argo-jenkins-exam', url: 'https://github.com/or3005/devopshift-welcome.git'
             }
@@ -51,11 +51,7 @@ pipeline {
             }
         }
         stage('Install Dependencies') {
-            agent {
-                docker {
-                    image 'python:3.10'
-                }
-            }
+      
             steps {
                 echo 'Installing dependencies'
                 sh "pip install -r ${params.PIPELINE_TYPE}/requirements.txt"
