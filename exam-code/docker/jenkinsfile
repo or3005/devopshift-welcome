@@ -1,0 +1,135 @@
+pipeline {
+    agent none  
+
+    parameters {
+        choice(name: 'PIPELINE_TYPE', choices: ['fe', 'be'], description: 'Select pipeline type')
+    }
+
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('docker-hub-creds')
+        DOCKER_REGISTRY = 'docker.io'
+        REPO_NAME = "${params.PIPELINE_TYPE == 'fe' ? 'fe-exam' : 'be-exam'}"
+        IMAGE_TAG = "${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Clone Repository') {
+            agent {
+                docker {
+                    image 'python:3.10'
+                }
+            }
+            steps {
+                git branch: 'workshop/argo-jenkins-exam', url: 'https://github.com/or3005/devopshift-welcome.git'
+            }
+        }
+
+        stage('Lint & Security Scan') {
+            agent {
+                docker {
+                    image 'python:3.10'
+                }
+            }
+            steps {
+                echo 'Lint & Security Scan start'
+                parallel {
+                    stage('Flake8 Linting') {
+                        steps {
+                            script {
+                                echo 'Flake8 Linting start'
+                                sh 'pip install flake8'
+                                sh "flake8 ${params.PIPELINE_TYPE}/src"
+                            }
+                        }
+                    }
+
+                    stage('Bandit') {
+                        steps {
+                            script {
+                                echo 'Bandit start'
+                                sh 'pip install bandit'
+                                sh "bandit -r ${params.PIPELINE_TYPE}/src"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            agent {
+                docker {
+                    image 'python:3.10'
+                }
+            }
+            steps {
+                echo 'Installing dependencies'
+                sh "pip install -r ${params.PIPELINE_TYPE}/requirements.txt"
+            }
+        }
+
+        stage('Build Docker Image') {
+            agent {
+                docker {
+                    image 'docker:19.03.12'
+                }
+            }
+            steps {
+                script {
+                    echo "Building Docker Image for ${REPO_NAME}"
+                    sh "docker build -t ${DOCKER_REGISTRY}/${REPO_NAME}:${BUILD_NUMBER} ${params.PIPELINE_TYPE}/."
+                    sh "docker tag ${DOCKER_REGISTRY}/${REPO_NAME}:${BUILD_NUMBER} ${DOCKER_REGISTRY}/${REPO_NAME}:latest"
+                }
+            }
+        }
+
+        stage('Run Tests in Container') {
+            agent {
+                docker {
+                    image 'python:3.10'
+                }
+            }
+            steps {
+                script {
+                    echo "Running Tests in Container"
+                    sh "docker run --rm ${DOCKER_REGISTRY}/${REPO_NAME}:${BUILD_NUMBER} pytest ${params.PIPELINE_TYPE}/tests/"
+                }
+            }
+        }
+
+        stage('Integration Test with Docker Compose') {
+            agent {
+                docker {
+                    image 'docker:19.03.12'
+                }
+            }
+            steps {
+                script {
+                    echo "Running Integration Test with Docker Compose"
+                    sh 'docker-compose up -d'
+                    sleep 10
+                    sh 'curl -f http://localhost:5002 || exit 1'
+                    sh 'docker-compose down'
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            agent {
+                docker {
+                    image 'docker:19.03.12'
+                }
+            }
+            steps {
+                script {
+                    echo "Pushing Docker image to Docker Hub"
+                    sh """
+                        echo \$DOCKERHUB_CREDENTIALS_PSW | docker login -u \$DOCKERHUB_CREDENTIALS_USR --password-stdin
+                    """
+                    sh "docker push ${DOCKER_REGISTRY}/${REPO_NAME}:${IMAGE_TAG}"
+                    sh "docker push ${DOCKER_REGISTRY}/${REPO_NAME}:latest"
+                }
+            }
+        }
+    }
+}
