@@ -71,6 +71,7 @@ pipeline {
                     }
             }
         }
+        }
 
         stage('Run Tests in Container') {
             agent {
