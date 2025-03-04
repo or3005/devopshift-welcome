@@ -51,11 +51,12 @@ pipeline {
             }
         }
         stage('Install Dependencies') {
-      
+           
             steps {
+               dir("exam-code/docker/${params.PIPELINE_TYPE}/src")
                 echo 'Installing dependencies'
                 sh "pip install -r ${params.PIPELINE_TYPE}/requirements.txt"
-            }
+            }}
         }
 
         stage('Build Docker Image') {
