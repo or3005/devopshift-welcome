@@ -55,7 +55,7 @@ pipeline {
             steps {
                 dir("exam-code/docker/${params.PIPELINE_TYPE}") {
                     echo 'Installing dependencies'
-                    sh "pip install -r ${params.PIPELINE_TYPE}/requirements.txt"
+                    sh "pip install -r requirements.txt"
                 }
             }
         }
