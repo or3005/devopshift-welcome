@@ -74,11 +74,7 @@ pipeline {
         }
 
         stage('Run Tests in Container') {
-            agent {
-                docker {
-                    image 'python:3.10'
-                }
-            }
+        
             steps {
                 dir("exam-code/docker/${params.PIPELINE_TYPE}") {
                  script {
