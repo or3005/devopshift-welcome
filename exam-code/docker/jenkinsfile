@@ -61,13 +61,14 @@ pipeline {
         }
 
         stage('Build Docker Image') {
-    
+            
             steps {
-                script {
-                    echo "Building Docker Image for ${REPO_NAME}"
-                    sh "docker build -t ${DOCKER_REGISTRY}/${REPO_NAME}:${BUILD_NUMBER} ${params.PIPELINE_TYPE}/."
-                    sh "docker tag ${DOCKER_REGISTRY}/${REPO_NAME}:${BUILD_NUMBER} ${DOCKER_REGISTRY}/${REPO_NAME}:latest"
-                }
+                dir("exam-code/docker/${params.PIPELINE_TYPE}") {
+                    script {
+                        echo "Building Docker Image for ${REPO_NAME}"
+                        sh "docker build -t ${DOCKER_REGISTRY}/${REPO_NAME}:${BUILD_NUMBER} ."
+                        sh "docker tag ${DOCKER_REGISTRY}/${REPO_NAME}:${BUILD_NUMBER} ${DOCKER_REGISTRY}/${REPO_NAME}:latest"
+                    }
             }
         }
 
