@@ -61,11 +61,7 @@ pipeline {
         }
 
         stage('Build Docker Image') {
-            agent {
-                docker {
-                    image 'docker:19.03.12'
-                }
-            }
+    
             steps {
                 script {
                     echo "Building Docker Image for ${REPO_NAME}"
