@@ -53,7 +53,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                dir("exam-code/docker/${params.PIPELINE_TYPE}/src") {
+                dir("exam-code/docker/${params.PIPELINE_TYPE}") {
                     echo 'Installing dependencies'
                     sh "pip install -r ${params.PIPELINE_TYPE}/requirements.txt"
                 }
