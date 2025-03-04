@@ -24,38 +24,29 @@ pipeline {
             }
         }
 
-        stage('Lint & Security Scan') {
-            agent {
-                docker {
-                    image 'python:3.10'
-                }
-            }
-            steps {
-                echo 'Lint & Security Scan start'
-                parallel {
-                    stage('Flake8 Linting') {
-                        steps {
-                            script {
-                                echo 'Flake8 Linting start'
-                                sh 'pip install flake8'
-                                sh "flake8 ${params.PIPELINE_TYPE}/src"
-                            }
+         stage('Lint & Security Scan') {
+            parallel {
+                stage('Flake8 Linting') {
+                    steps {
+                        script {
+                            echo 'Flake8 Linting start'
+                            sh 'pip install flake8'
+                            sh "flake8 ${params.PIPELINE_TYPE}/src"
                         }
                     }
+                }
 
-                    stage('Bandit') {
-                        steps {
-                            script {
-                                echo 'Bandit start'
-                                sh 'pip install bandit'
-                                sh "bandit -r ${params.PIPELINE_TYPE}/src"
-                            }
+                stage('Bandit') {
+                    steps {
+                        script {
+                            echo 'Bandit start'
+                            sh 'pip install bandit'
+                            sh "bandit -r ${params.PIPELINE_TYPE}/src"
                         }
                     }
                 }
             }
         }
-
         stage('Install Dependencies') {
             agent {
                 docker {
