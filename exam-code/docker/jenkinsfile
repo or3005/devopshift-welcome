@@ -80,36 +80,30 @@ pipeline {
                 }
             }
             steps {
-                script {
+                dir("exam-code/docker/${params.PIPELINE_TYPE}") {
+                 script {
                     echo "Running Tests in Container"
-                    sh "docker run --rm ${DOCKER_REGISTRY}/${REPO_NAME}:${BUILD_NUMBER} pytest ${params.PIPELINE_TYPE}/tests/"
+                    sh "docker run --rm ${DOCKER_REGISTRY}/${REPO_NAME}:${BUILD_NUMBER} pytest /tests/"
                 }
-            }
+            }}
         }
 
         stage('Integration Test with Docker Compose') {
-            agent {
-                docker {
-                    image 'docker:19.03.12'
-                }
-            }
+         
             steps {
-                script {
-                    echo "Running Integration Test with Docker Compose"
-                    sh 'docker-compose up -d'
-                    sleep 10
-                    sh 'docker ps | grep -q 5002 && echo "Port 5002 is mapped and the container is running." || exit 1'
-                    sh 'docker-compose down'
+                dir("exam-code/docker/") {
+                    script {
+                     echo "Running Integration Test with Docker Compose"
+                     sh 'docker-compose up -d'
+                     sleep 10
+                     sh 'docker ps | grep -q 5002 && echo "Port 5002 is mapped and the container is running." || exit 1'
+                     sh 'docker-compose down'
                 }
-            }
+            }}
         }
 
         stage('Push to Docker Hub') {
-            agent {
-                docker {
-                    image 'docker:19.03.12'
-                }
-            }
+         
             steps {
                 script {
                     echo "Pushing Docker image to Docker Hub"
