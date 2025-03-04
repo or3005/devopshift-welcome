@@ -24,22 +24,25 @@ pipeline {
             parallel {
                 stage('Flake8 Linting') {
                     steps {
-                        script {
-                            echo 'Flake8 Linting start'
-                
-                            sh 'pip install flake8'
-                            sh "flake8 ${params.PIPELINE_TYPE}/src"
-                        }
+                       script {
+                             dir("exam-code/docker/${params.PIPELINE_TYPE}/src") {
+                                 echo 'Flake8 Linting start'
+                                 sh 'pip install flake8'
+                                 sh 'flake8 .'
+                                  }
+                         }
                     }
                 }
 
                 stage('Bandit') {
                     steps {
                         script {
+                          dir("exam-code/docker/${params.PIPELINE_TYPE}/src") {
                             echo 'Bandit start'
                            
                             sh 'pip install bandit'
-                            sh "bandit -r ${params.PIPELINE_TYPE}/src"
+                            sh "bandit -r ."
+                              }               
                         }
                     }
                 }
